@@ -1,1 +1,1 @@
-# ncurses sokoban c++
+# Project about ncurses game like sokoban in c++
