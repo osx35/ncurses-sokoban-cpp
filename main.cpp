@@ -50,21 +50,21 @@ void print_board(int x, int y, int character, Map &m, int screenH, int screenW) 
 
 	mvprintw(0, 0, "Player Position: (%d, %d), Map Dimensions: (%d, %d)", x, y, m.cols, m.rows);
 	mvprintw(1, 0, "Box Position and count: (%d, %d, %d), Goal Position and count: (%d, %d, %d)", m.box.col, m.box.row,m.box.count, m.goal.col, m.goal.row, m.goal.count);
+	mvprintw(2, 0, "Level: (%d)",m.level );
 	// wyswietlamy zawartosc wirtualnego ekranu dopiero po refresh
 	refresh();
 }
 
 int main(void) {
-
 	Map mapa1;
-	mapa1.sprawdzRozmiar();
-	mapa1.itemsLocation();
-	
+	mapa1.pathName = "mapa.txt";
+	mapa1.initLevel();
+
 	// inicjalizacja ncurses
 	WINDOW *mainwin = initscr();
 	ncurses_config();
-	
-	int screenHeight, screenWidth;
+
+	int screenHeight=0, screenWidth=0;
 	// pobiera wymiary terminala
 	getmaxyx(stdscr, screenHeight, screenWidth);
 
@@ -79,7 +79,9 @@ int main(void) {
 	bool playing = true;
 	// glowna nieskonczona petla programu
 	while (playing) {
-
+		getmaxyx(stdscr, screenHeight, screenWidth);
+		int fixedWidth = (screenWidth - mapa1.cols) / 2;
+		int fixedHeight = (screenHeight - mapa1.rows) / 2;
 		int new_position_x = last_position_x;
 		int new_position_y = last_position_y;
 		char direction;
@@ -95,7 +97,7 @@ int main(void) {
 						direction = 'u';
 						if(canMove(new_position_y, last_position_x, mapa1, direction, 0))
 							last_position_y = new_position_y;
-							
+
 					}
 					break;
 				case KEY_DOWN:
@@ -104,7 +106,7 @@ int main(void) {
 						direction = 'd';
 						if(canMove(new_position_y, last_position_x, mapa1, direction, 0))
 							last_position_y = new_position_y;
-							
+
 					}
 					break;
 				case KEY_LEFT:
@@ -113,7 +115,7 @@ int main(void) {
 						direction = 'l';
 						if(canMove(last_position_y, new_position_x, mapa1, direction, 0))
 							last_position_x = new_position_x;
-							
+
 					}
 					break;
 				case KEY_RIGHT:
@@ -122,14 +124,24 @@ int main(void) {
 						direction = 'r';
 						if(canMove(last_position_y, new_position_x, mapa1, direction, 0))
 							last_position_x = new_position_x;
-							
+
 					}
 					break;
 				case 'r':
-				case 'R':					
+				case 'R':
 					mapa1.resetLevel();
 					last_position_x = mapa1.player.col;
 					last_position_y = mapa1.player.row;
+					break;
+				case 't':
+					mapa1.level=1;
+					mapa1.pathName = "mapa1.txt";
+					mapa1.initLevel();
+					break;
+				case 'T':
+					mapa1.level =0;
+					mapa1.pathName = "mapa.txt";
+					mapa1.initLevel();
 					break;
 				case 'q':
 				case 'Q':
@@ -181,4 +193,4 @@ bool canMove(int newRow, int newCol, Map &m, char dir, int boxbox) {
 	}
 
 	return true;
-}
+} 
