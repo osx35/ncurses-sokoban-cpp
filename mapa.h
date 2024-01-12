@@ -96,7 +96,7 @@ class Map {
 		void printMapNCurses(int strow, int stcol) {
 			for (int i = 0; i < rows; ++i) {
 				for (int j = 0; j < cols; ++j) {
-						mvprintw(strow + i, stcol + j, "%c", mapaArray[i][j]);
+					mvprintw(strow + i, stcol + j, "%c", mapaArray[i][j]);
 				}
 			}
 		}
@@ -112,6 +112,16 @@ class Map {
 			goal.count =0;
 			sprawdzRozmiar();
 			itemsLocation();
+		}
+		bool allGoalsReached() const {
+			for (int i = 0; i < rows; ++i) {
+				for (int j = 0; j < cols; ++j) {
+					if (originalArray[i][j] == '.' && mapaArray[i][j] != '$') {
+						return false;
+					}
+				}
+			}
+			return true;
 		}
 };
 

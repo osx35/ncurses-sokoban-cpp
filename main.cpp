@@ -73,7 +73,7 @@ void print_board(int x, int y, int character, Map &m, int screenH, int screenW) 
 
 int main(void) {
 	Map mapa1;
-	mapa1.pathName = "mapa.txt";
+	mapa1.pathName = "mapy/mapa.txt";
 	mapa1.initLevel();
 
 	// inicjalizacja ncurses
@@ -95,6 +95,41 @@ int main(void) {
 	bool playing = true;
 	// glowna nieskonczona petla programu
 	while (playing) {
+		if (mapa1.allGoalsReached()) {
+			mapa1.level++;
+			switch (mapa1.level) {
+				case 1:
+					mapa1.pathName = "mapy/mapa1.txt";
+					mapa1.initLevel();
+					last_position_x = mapa1.player.col;
+					last_position_y = mapa1.player.row;
+					break;
+				case 2:
+					mapa1.pathName = "mapy/mapa2.txt";
+					mapa1.initLevel();
+					last_position_x = mapa1.player.col;
+					last_position_y = mapa1.player.row;
+					break;
+				case 3:
+					mapa1.pathName = "mapy/mapa3.txt";
+					mapa1.initLevel();
+					last_position_x = mapa1.player.col;
+					last_position_y = mapa1.player.row;
+					break;
+				case 4:
+					mapa1.pathName = "mapy/mapa4.txt";
+					mapa1.initLevel();
+					last_position_x = mapa1.player.col;
+					last_position_y = mapa1.player.row;
+					break;
+				case 5:
+					mapa1.pathName = "mapy/mapa5.txt";
+					mapa1.initLevel();
+					last_position_x = mapa1.player.col;
+					last_position_y = mapa1.player.row;
+					break;
+			}
+		}
 		getmaxyx(stdscr, screenHeight, screenWidth);
 		int fixedWidth = (screenWidth - mapa1.cols) / 2;
 		int fixedHeight = (screenHeight - mapa1.rows) / 2;
@@ -109,7 +144,7 @@ int main(void) {
 						--new_position_y;
 						direction = 'u';
 						if (canMove(new_position_y, last_position_x, mapa1, direction, 0)) {
-							last_position_y = new_position_y;							
+							last_position_y = new_position_y;
 							if (mapa1.mapaArray[last_position_y][last_position_x] == '$') {
 								moveBox(last_position_y, last_position_x, direction, mapa1);
 							}
@@ -155,20 +190,6 @@ int main(void) {
 				case 'r':
 				case 'R':
 					mapa1.resetLevel();
-					last_position_x = mapa1.player.col;
-					last_position_y = mapa1.player.row;
-					break;
-				case 't':
-					mapa1.level=1;
-					mapa1.pathName = "mapa1.txt";
-					mapa1.initLevel();
-					last_position_x = mapa1.player.col;
-					last_position_y = mapa1.player.row;
-					break;
-				case 'T':
-					mapa1.level =0;
-					mapa1.pathName = "mapa.txt";
-					mapa1.initLevel();
 					last_position_x = mapa1.player.col;
 					last_position_y = mapa1.player.row;
 					break;
