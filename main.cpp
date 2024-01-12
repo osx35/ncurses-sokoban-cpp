@@ -4,6 +4,7 @@
 #include "mapa.h"
 
 bool canMove(int newRow, int newCol, Map &m, char dir, int boxbox);
+bool moveBox(int boxRow, int boxCol, char dir, Map &m);
 
 void ncurses_init_colors() {
 	// Więcej o kolorach tu https://www.linuxjournal.com/content/programming-color-ncurses
@@ -60,7 +61,7 @@ void print_board(int x, int y, int character, Map &m, int screenH, int screenW) 
 	int goalCount = 0;
 	for (int i = 0; i < m.rows; ++i) {
 		for (int j = 0; j < m.cols; ++j) {
-			if (m.mapaArray[i][j] == '.') {
+			if (m.originalArray[i][j] == '.') {
 				mvprintw(5+m.rows + goalCount, 0, "Goal Position: (%d, %d)", j, i);
 				goalCount++;
 			}
@@ -100,46 +101,55 @@ int main(void) {
 		int new_position_x = last_position_x;
 		int new_position_y = last_position_y;
 		char direction;
-		// szczytujemy literke z klawiatury
-		// (jesli sa tu znaki specjlane musi byc int bo nie zmieszcza sie w char)
 		int input = getch();
 		if (input != ERR) {
 			switch (input) {
 				case KEY_UP:
-					// sprawdzamy czy nie wychodzimy poza ekran
 					if (last_position_y > 0) {
 						--new_position_y;
 						direction = 'u';
-						if(canMove(new_position_y, last_position_x, mapa1, direction, 0))
-							last_position_y = new_position_y;
-
+						if (canMove(new_position_y, last_position_x, mapa1, direction, 0)) {
+							last_position_y = new_position_y;							
+							if (mapa1.mapaArray[last_position_y][last_position_x] == '$') {
+								moveBox(last_position_y, last_position_x, direction, mapa1);
+							}
+						}
 					}
 					break;
 				case KEY_DOWN:
 					if (last_position_y < mapa1.rows - 1) {
 						++new_position_y;
 						direction = 'd';
-						if(canMove(new_position_y, last_position_x, mapa1, direction, 0))
+						if (canMove(new_position_y, last_position_x, mapa1, direction, 0)) {
 							last_position_y = new_position_y;
-
+							if (mapa1.mapaArray[last_position_y][last_position_x] == '$') {
+								moveBox(last_position_y, last_position_x, direction, mapa1);
+							}
+						}
 					}
 					break;
 				case KEY_LEFT:
 					if (last_position_x > 0) {
 						--new_position_x;
 						direction = 'l';
-						if(canMove(last_position_y, new_position_x, mapa1, direction, 0))
+						if (canMove(last_position_y, new_position_x, mapa1, direction, 0)) {
 							last_position_x = new_position_x;
-
+							if (mapa1.mapaArray[last_position_y][last_position_x] == '$') {
+								moveBox(last_position_y, last_position_x, direction, mapa1);
+							}
+						}
 					}
 					break;
 				case KEY_RIGHT:
 					if (last_position_x < mapa1.cols - 1) {
 						++new_position_x;
 						direction = 'r';
-						if(canMove(last_position_y, new_position_x, mapa1, direction, 0))
+						if (canMove(last_position_y, new_position_x, mapa1, direction, 0)) {
 							last_position_x = new_position_x;
-
+							if (mapa1.mapaArray[last_position_y][last_position_x] == '$') {
+								moveBox(last_position_y, last_position_x, direction, mapa1);
+							}
+						}
 					}
 					break;
 				case 'r':
@@ -212,4 +222,41 @@ bool canMove(int newRow, int newCol, Map &m, char dir, int boxbox) {
 	}
 
 	return true;
+}
+
+bool moveBox(int boxRow, int boxCol, char dir, Map &m) {
+	int newRow = boxRow;
+	int newCol = boxCol;
+
+	switch (dir) {
+		case 'u':
+			newRow--;
+			break;
+		case 'd':
+			newRow++;
+			break;
+		case 'l':
+			newCol--;
+			break;
+		case 'r':
+			newCol++;
+			break;
+	}
+
+	if (newRow < 0 || newRow >= m.rows || newCol < 0 || newCol >= m.cols) {
+		return false;
+	}
+
+
+	if (m.mapaArray[newRow][newCol] == ' ' || m.mapaArray[newRow][newCol] == '.') {
+
+		m.mapaArray[newRow][newCol] = '$';
+		if(m.originalArray[boxRow][boxCol]=='.')
+			m.mapaArray[boxRow][boxCol] = '.';
+		else
+			m.mapaArray[boxRow][boxCol] = ' ';
+		return true;
+	}
+
+	return false;
 }
