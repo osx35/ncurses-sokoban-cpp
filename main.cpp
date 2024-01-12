@@ -30,28 +30,43 @@ void ncurses_config() {
 }
 
 void print_board(int x, int y, int character, Map &m, int screenH, int screenW) {
-	// operujemy na wirtualnym ekranie bedacym buforem ekranu
-	// a nastepnie wyswietlamy bufor w terminalu funckja refresh
+	clear();
 
-	clear(); // czysci wirtualny ekran (lepiej bylo by czyscic jeden znak albo jedna linie)
-
-	// ustawiamy wczesniej zdefiniowane pary kolorow
 	attron(COLOR_PAIR(2));
 	m.printMapNCurses(screenH, screenW);
 	attroff(COLOR_PAIR(2));
 
 	attron(COLOR_PAIR(1));
-	// szkaczemy kursorem do danej pozycji
 	move(y + screenH, x + screenW);
 	addch(character);
-
-	// przywracamy domyslny kolor
 	attroff(COLOR_PAIR(1));
 
-	mvprintw(0, 0, "Player Position: (%d, %d), Map Dimensions: (%d, %d)", x, y, m.cols, m.rows);
-	mvprintw(1, 0, "Box Position and count: (%d, %d, %d), Goal Position and count: (%d, %d, %d)", m.box.col, m.box.row,m.box.count, m.goal.col, m.goal.row, m.goal.count);
-	mvprintw(2, 0, "Level: (%d)",m.level );
-	// wyswietlamy zawartosc wirtualnego ekranu dopiero po refresh
+
+	mvprintw(1, 0, "Level: (%d), Map Dimensions: (%d, %d)", m.level, m.cols, m.rows);
+	mvprintw(2, 0, "Player Position: (%d, %d)", x, y);
+	mvprintw(3, 0, "Box count: (%d), Goal count: (%d)", m.box.count, m.goal.count);
+
+	int boxCount = 0;
+	for (int i = 0; i < m.rows; ++i) {
+		for (int j = 0; j < m.cols; ++j) {
+			if (m.mapaArray[i][j] == '$') {
+				mvprintw(5 + boxCount, 0, "Box Position: (%d, %d)", j, i);
+				boxCount++;
+			}
+		}
+	}
+
+
+	int goalCount = 0;
+	for (int i = 0; i < m.rows; ++i) {
+		for (int j = 0; j < m.cols; ++j) {
+			if (m.mapaArray[i][j] == '.') {
+				mvprintw(5+m.rows + goalCount, 0, "Goal Position: (%d, %d)", j, i);
+				goalCount++;
+			}
+		}
+	}
+
 	refresh();
 }
 
@@ -137,11 +152,15 @@ int main(void) {
 					mapa1.level=1;
 					mapa1.pathName = "mapa1.txt";
 					mapa1.initLevel();
+					last_position_x = mapa1.player.col;
+					last_position_y = mapa1.player.row;
 					break;
 				case 'T':
 					mapa1.level =0;
 					mapa1.pathName = "mapa.txt";
 					mapa1.initLevel();
+					last_position_x = mapa1.player.col;
+					last_position_y = mapa1.player.row;
 					break;
 				case 'q':
 				case 'Q':
@@ -193,4 +212,4 @@ bool canMove(int newRow, int newCol, Map &m, char dir, int boxbox) {
 	}
 
 	return true;
-} 
+}
