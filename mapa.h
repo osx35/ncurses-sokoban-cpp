@@ -18,8 +18,6 @@ class Map {
 		std::string pathName;
 		std::vector<std::vector<char>> mapaArray;
 		std::vector<std::vector<char>> originalArray;
-		std::vector<std::vector<Position>> boxLocations;
-		std::vector<std::vector<Position>> goalLocations;
 		int rows;
 		int cols;
 		Position player;
@@ -60,8 +58,6 @@ class Map {
 
 			mapaArray.resize(rows, std::vector<char>(cols));
 			originalArray.resize(rows, std::vector<char>(cols));
-			boxLocations.resize(rows, std::vector<Position>(cols));
-			goalLocations.resize(rows, std::vector<Position>(cols));
 
 			std::string linia;
 			for (int i = 0; i < rows; ++i) {
@@ -78,13 +74,9 @@ class Map {
 							player.col = j;
 							break;
 						case '$':
-							boxLocations[i][j].row = i;
-							boxLocations[i][j].col = j;
 							box.count++;
 							break;
 						case '.':
-							goalLocations[i][j].row = i;
-							goalLocations[i][j].col = j;
 							goal.count++;
 							break;
 					}
@@ -106,8 +98,6 @@ class Map {
 			initLevel();
 		}
 		void initLevel() {
-			boxLocations.clear();
-			goalLocations.clear();
 			box.count =0;
 			goal.count =0;
 			sprawdzRozmiar();
